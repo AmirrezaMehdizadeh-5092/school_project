@@ -21,6 +21,11 @@ const StudentInfo = mongose.Schema({
 	      dropDups:true
 	    }
     },
+    reshte_diplom:
+	{
+		type:String,
+	    required:true,
+	},
     university:
     {
         type:String,
@@ -41,6 +46,11 @@ const StudentInfo = mongose.Schema({
         type:String,
         required : true,
     },
+    original_image_name:
+	{
+		type:String,
+	    required:true,
+	},
     joinDate:
     {
       type:Date,

@@ -9,10 +9,12 @@ const mkdir = require('mkdirp');
 
 // import models
 const u = require("../midd/upload");
+const u2 = require("../midd/student_image");
 const ImageModel = require('../model/image');
+const StudentModel = require("../model/student");
 router.use(cors());
 
-// sort image gallery 
+// sort image gallery and accept stuent
 router.get("/gallery", async (req, res) => {
     let gallery = await ImageModel.aggregate(
         [
@@ -21,6 +23,21 @@ router.get("/gallery", async (req, res) => {
     )
     res.send(gallery);
 })
+router.get("/accept_student", async (req, res) => {
+    let accept_student = await StudentModel.aggregate(
+        [
+            { $sort: { year: -1 } }
+        ]
+    )
+    res.send(accept_student);
+})
+
+// filter accept studentes
+router.post("/filter_accept_student", async (req, res) => {
+    sel = req.body.sel;
+    filter = await StudentModel.find({year : sel});
+    res.send(filter);
+});
 
 // create token for admin authentication
 router.post("/create_token", (req, res) => {
@@ -57,9 +74,48 @@ router.post("/check_image", async (req, res) => {
     }
 });
 
+// check user not recoreded before
+router.post("/ckeck_image_student", async (req, res) => {
+    name = req.body.name;
+    code = req.body.code;
+    find2 = await StudentModel.findOne({ code_meli: code });
+    find1 = await StudentModel.findOne({ original_image_name: name });
+    if (find1) {
+        res.send("PF")
+    }
+    else if (find2)
+    {
+        res.send("CF")
+    }
+    else {
+        res.send("aa")
+    }
+})
+
 //  record student information in student model
-router.post("/set_student" , async(req,res)=>{
-    
+router.post("/set_student", u2.single('file2'), async (req, res) => {
+    fname = req.body.fname;
+    lname = req.body.lname;
+    code = req.body.code;
+    reshte_diplom = req.body.reshte_diplom;
+    university = req.body.university;
+    reshte = req.body.reshte;
+    year = req.body.year;
+    filename = req.file.filename;
+    originalname = req.file.originalname;
+    NewStudent = new StudentModel({
+        first_name: fname,
+        last_name: lname,
+        code_meli: code,
+        reshte_diplom: reshte_diplom,
+        university: university,
+        reshte: reshte,
+        year: year,
+        image: filename,
+        original_image_name: originalname
+    })
+    NewStudent.save();
+
 })
 
 router.use((err, req, res, next) => {

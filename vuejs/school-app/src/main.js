@@ -23,6 +23,10 @@ const routes = [
   {
     path: '/admin_login',
     component: require('./components/MainAdminLoginComp.vue').default,
+  },
+  {
+    path: '/acc-student',
+    component: require('./components/MainAcceptStudentComp.vue').default,
   }
 ];
 
